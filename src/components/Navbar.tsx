@@ -12,7 +12,7 @@ const Navbar = () => {
             style={{ transform: 'rotate(-45deg)' }}
           />
           <h1 className="text-primary-color text-[22px] tracking-tight font-bold">
-            orbit
+            Orbit
           </h1>
         </div>
 

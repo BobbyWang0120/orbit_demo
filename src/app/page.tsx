@@ -19,6 +19,8 @@ interface Message {
   isLoading?: boolean;
 }
 
+const AI_RESPONSE = "Hi! I'm Orbit, your personal travel companion. I'd love to help you plan an amazing journey. Whether you need recommendations for destinations, itineraries, or local experiences, I'm here to make your travel dreams come true. Where would you like to explore?";
+
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
@@ -46,6 +48,20 @@ export default function Home() {
     };
     
     setMessages(prev => [...prev, aiLoadingMessage]);
+
+    // 2秒后替换加载消息为实际回答
+    setTimeout(() => {
+      setMessages(prev => prev.map(msg => {
+        if (msg.id === aiLoadingMessage.id) {
+          return {
+            ...msg,
+            content: AI_RESPONSE,
+            isLoading: false
+          };
+        }
+        return msg;
+      }));
+    }, 2000);
   };
 
   return (
@@ -59,8 +75,8 @@ export default function Home() {
           <div className="w-1/3 flex flex-col bg-white rounded-xl border border-[var(--border-color)] overflow-hidden">
             {/* 聊天标题 */}
             <div className="px-6 py-4 border-b border-[var(--border-color)]">
-              <h2 className="text-lg font-medium text-text-primary">Chat with AI Travel Assistant</h2>
-              <p className="text-sm text-text-secondary mt-1">Let's plan your perfect trip together</p>
+              <h2 className="text-lg font-medium text-text-primary">Chat with Orbit</h2>
+              <p className="text-sm text-text-secondary mt-1">Your AI travel companion</p>
             </div>
 
             {/* 消息列表 */}
@@ -71,8 +87,8 @@ export default function Home() {
                     <Plane className="w-8 h-8 text-primary-color" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-text-primary mb-2">Start Your Journey</h3>
-                    <p className="text-sm text-text-secondary">Tell me where you'd like to go, and I'll help you create the perfect itinerary.</p>
+                    <h3 className="font-medium text-text-primary mb-2">Start Your Journey with Orbit</h3>
+                    <p className="text-sm text-text-secondary">Tell me your dream destination, and I'll help you make it a reality.</p>
                   </div>
                 </div>
               ) : (
@@ -92,7 +108,7 @@ export default function Home() {
                         {message.sender === 'ai' && (
                           <div className="flex items-center gap-2 mb-2 text-primary-color">
                             <MapPin className="w-4 h-4" />
-                            <span className="text-sm font-medium">Travel Assistant</span>
+                            <span className="text-sm font-medium">Orbit</span>
                           </div>
                         )}
                         {message.sender === 'ai' && message.isLoading ? (

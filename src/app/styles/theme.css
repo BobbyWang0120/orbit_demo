@@ -1,0 +1,33 @@
+:root {
+  /* 主色调 - 使用 Airbnb 的珊瑚红色调 */
+  --primary-color: #FF385C;
+  --primary-light: #FFF8F6;
+  --secondary-color: #00A699; /* Airbnb的绿色调 */
+  --accent-color: #914669;    /* 优雅的紫色调 */
+  
+  /* 文本颜色 */
+  --text-primary: #222222;
+  --text-secondary: #717171;
+  
+  /* 背景色 */
+  --background-light: #FFFFFF;
+  --chat-bubble-ai: #F7F7F7;
+  --chat-bubble-user: #FFF8F6;
+  
+  /* 圆角设计 - Airbnb 使用较大的圆角 */
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  
+  /* 阴影效果 - 更加柔和 */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.08);
+  
+  /* 边框颜色 */
+  --border-color: #DDDDDD;
+  
+  /* 交互状态颜色 */
+  --hover-color: #F7F7F7;
+  --active-color: #EBEBEB;
+}

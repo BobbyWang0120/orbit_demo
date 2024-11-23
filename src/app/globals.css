@@ -2,9 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './styles/theme.css';
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --background-start-rgb: 255, 255, 255;
+  --background-end-rgb: 255, 245, 245;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,4 +22,23 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  @apply bg-background-light text-text-primary;
+}
+
+/* 自定义滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
 }

@@ -1,101 +1,131 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { Plane, Send, MapPin } from 'lucide-react';
+import './styles/theme.css';
+import Navbar from '../components/Navbar';
+
+const MapComponent = dynamic(() => import('../components/Map'), {
+  ssr: false,
+  loading: () => <div className="h-full w-full bg-[var(--hover-color)] animate-pulse rounded-lg"></div>
+});
+
+interface Message {
+  id: string;
+  content: string;
+  sender: 'user' | 'ai';
+  timestamp: Date;
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputMessage, setInputMessage] = useState('');
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleSendMessage = () => {
+    if (!inputMessage.trim()) return;
+    
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      content: inputMessage,
+      sender: 'user',
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, newMessage]);
+    setInputMessage('');
+  };
+
+  return (
+    <main className="min-h-screen bg-background-light">
+      <Navbar />
+
+      {/* 主内容区域 */}
+      <div className="max-w-[1800px] mx-auto p-6">
+        <div className="flex gap-6 h-[calc(100vh-7rem)]">
+          {/* 聊天区域 */}
+          <div className="w-1/3 flex flex-col bg-white rounded-xl border border-[var(--border-color)] overflow-hidden">
+            {/* 聊天标题 */}
+            <div className="px-6 py-4 border-b border-[var(--border-color)]">
+              <h2 className="text-lg font-medium text-text-primary">Chat with AI Travel Assistant</h2>
+              <p className="text-sm text-text-secondary mt-1">Let's plan your perfect trip together</p>
+            </div>
+
+            {/* 消息列表 */}
+            <div className="flex-1 overflow-y-auto px-6 py-4">
+              {messages.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-center space-y-4 px-6">
+                  <div className="w-16 h-16 rounded-full bg-primary-light flex items-center justify-center">
+                    <Plane className="w-8 h-8 text-primary-color" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-text-primary mb-2">Start Your Journey</h3>
+                    <p className="text-sm text-text-secondary">Tell me where you'd like to go, and I'll help you create the perfect itinerary.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div
+                        className={`max-w-[85%] rounded-xl p-3 ${
+                          message.sender === 'user'
+                            ? 'bg-primary-color text-white'
+                            : 'bg-[var(--chat-bubble-ai)]'
+                        }`}
+                      >
+                        {message.sender === 'ai' && (
+                          <div className="flex items-center gap-2 mb-2 text-primary-color">
+                            <MapPin className="w-4 h-4" />
+                            <span className="text-sm font-medium">Travel Assistant</span>
+                          </div>
+                        )}
+                        <p className="text-sm leading-relaxed">{message.content}</p>
+                        <span className={`text-[10px] ${
+                          message.sender === 'user' 
+                            ? 'text-white/80' 
+                            : 'text-text-secondary'
+                        } block text-right mt-1`}>
+                          {message.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 输入区域 */}
+            <div className="p-4 border-t border-[var(--border-color)]">
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                  placeholder="Where would you like to go?"
+                  className="flex-1 px-4 py-3 rounded-lg bg-[var(--hover-color)] placeholder-text-secondary text-sm focus:outline-none focus:ring-2 focus:ring-primary-color/20 transition-shadow"
+                />
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!inputMessage.trim()}
+                  className="p-3 bg-primary-color text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Send className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 地图区域 */}
+          <div className="w-2/3 bg-white rounded-xl border border-[var(--border-color)] overflow-hidden">
+            <MapComponent />
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+    </main>
   );
 }

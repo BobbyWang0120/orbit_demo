@@ -276,7 +276,7 @@ const Map: React.FC<MapProps> = ({ showMarkers }) => {
               <div class="popup-content">
                 <div class="popup-header">
                   <h3 class="popup-title">${name}</h3>
-                  <button class="chat-button" title="Chat about this place">
+                  <button class="chat-button" title="Chat about this place" onclick="event.stopPropagation();">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 13.9021 3.5901 15.6665 4.59721 17.1199C4.70168 17.2707 4.7226 17.4653 4.64529 17.6317L3.42747 20.2519C3.23699 20.5853 3.47768 21 3.86159 21H12Z" 
                         stroke="currentColor" 
@@ -299,13 +299,18 @@ const Map: React.FC<MapProps> = ({ showMarkers }) => {
           .bindPopup(popup);
 
         marker.on('popupopen', () => {
-          const chatButton = document.querySelector('.chat-button');
-          if (chatButton) {
-            chatButton.addEventListener('click', () => {
-              popup.setContent(createPopupContent(true));
-              popup.update();
-            });
-          }
+          // 使用 setTimeout 确保 DOM 元素已经渲染
+          setTimeout(() => {
+            const chatButton = document.querySelector('.chat-button');
+            if (chatButton) {
+              chatButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                popup.setContent(createPopupContent(true));
+                popup.update();
+              }, { once: true }); // 使用 once: true 防止事件监听器重复添加
+            }
+          }, 0);
         });
 
         markersRef.current.push(marker);

@@ -133,6 +133,53 @@ const Map: React.FC<MapProps> = ({ showMarkers }) => {
         .leaflet-tile-container img {
           filter: saturate(0.9) brightness(1.02) !important;
         }
+        
+        /* 自定义弹出窗口样式 */
+        .popup-content {
+          padding: 4px;
+        }
+
+        .popup-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 4px;
+        }
+
+        .popup-title {
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--text-primary);
+          margin: 0;
+        }
+
+        .popup-description {
+          font-size: 12px;
+          color: var(--text-secondary);
+          margin: 0;
+          line-height: 1.4;
+        }
+
+        .chat-button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 28px;
+          height: 28px;
+          border: none;
+          background: var(--hover-color);
+          color: var(--primary-color);
+          border-radius: 50%;
+          cursor: pointer;
+          padding: 0;
+          transition: all 0.2s ease;
+        }
+
+        .chat-button:hover {
+          background: var(--primary-color);
+          color: white;
+        }
       `;
       document.head.appendChild(style);
     }
@@ -168,8 +215,21 @@ const Map: React.FC<MapProps> = ({ showMarkers }) => {
           closeButton: false,
           className: 'custom-popup'
         }).setContent(`
-          <div class="font-medium">${name}</div>
-          <div class="text-sm text-text-secondary mt-1">${description}</div>
+          <div class="popup-content">
+            <div class="popup-header">
+              <h3 class="popup-title">${name}</h3>
+              <button class="chat-button" title="Chat about this place">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 13.9021 3.5901 15.6665 4.59721 17.1199C4.70168 17.2707 4.7226 17.4653 4.64529 17.6317L3.42747 20.2519C3.23699 20.5853 3.47768 21 3.86159 21H12Z" 
+                    stroke="currentColor" 
+                    stroke-width="2" 
+                    stroke-linecap="round" 
+                    stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+            <p class="popup-description">${description}</p>
+          </div>
         `);
 
         const marker = L.marker(location as [number, number], { icon: customIcon })

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Plane, Send, MapPin } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import './styles/theme.css';
 import Navbar from '../components/Navbar';
 
@@ -19,20 +20,40 @@ interface Message {
   isLoading?: boolean;
 }
 
-const FIRST_AI_RESPONSE = `I've created a perfect Tokyo exploration plan for you! Here's a suggested itinerary:
+const FIRST_AI_RESPONSE = `# Welcome to Tokyo! 🗼
 
-Morning: Start your day at the serene Meiji Shrine, then head to the beautiful Shinjuku Gyoen National Garden for a peaceful walk.
+I've created a perfect exploration plan for you. Let me guide you through some of Tokyo's most amazing spots!
 
-Afternoon: Visit the iconic Tokyo Tower for breathtaking city views, followed by the historic Senso-ji Temple in Asakusa.
+## 🌅 Morning Activities
+* **Meiji Shrine** - Start your day with serenity
+  * Beautiful traditional architecture
+  * Peaceful forest surroundings
+* **Shinjuku Gyoen Garden**
+  * One of Tokyo's largest parks
+  * Perfect for a morning stroll
 
-Evening: Experience the energy of Shibuya Crossing, the world's busiest pedestrian crossing!
+## 🌞 Afternoon Adventures
+* **Tokyo Tower**
+  * Breathtaking city views
+  * Iconic photo opportunities
+* **Senso-ji Temple**
+  * Tokyo's oldest Buddhist temple
+  * Rich in history and culture
 
-Additional spots worth visiting:
-- Tsukiji Outer Market for amazing Japanese food
-- Ueno Park for museums and cultural sites
-- Tokyo Skytree for more stunning views
+## 🌆 Evening Experiences
+* **Shibuya Crossing**
+  * World's busiest pedestrian crossing
+  * Amazing urban energy
+  * Perfect for night photography
 
-I've marked all these locations on the map. Click any marker to learn more! Which spot interests you the most?`;
+## 📍 Additional Must-Visit Spots
+* **Tsukiji Outer Market** - Food lover's paradise
+* **Ueno Park** - Cultural hub with museums
+* **Tokyo Skytree** - Modern architectural marvel
+
+I've marked all these locations on the map for you! Click any marker to learn more about each spot. 
+
+**Which of these exciting places would you like to explore first?** 🎌`;
 
 const STANDARD_AI_RESPONSE = "Hi! I'm Orbit, your personal travel companion. I'd love to help you plan an amazing journey. Whether you need recommendations for destinations, itineraries, or local experiences, I'm here to make your travel dreams come true. Where would you like to explore?";
 
@@ -144,7 +165,9 @@ export default function Home() {
                             <div className="w-2 h-2 rounded-full bg-primary-color animate-bounce" style={{ animationDelay: '300ms' }}></div>
                           </div>
                         ) : (
-                          <p className="text-sm leading-relaxed">{message.content}</p>
+                          <div className={`prose ${message.sender === 'user' ? 'text-white' : 'text-text-primary'} max-w-none text-sm leading-relaxed`}>
+                            <ReactMarkdown>{message.content}</ReactMarkdown>
+                          </div>
                         )}
                         <span className={`text-[10px] ${
                           message.sender === 'user' 

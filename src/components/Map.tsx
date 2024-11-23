@@ -298,6 +298,26 @@ const Map: React.FC<MapProps> = ({ showMarkers }) => {
           .addTo(mapRef.current!)
           .bindPopup(popup);
 
+        // 添加点击事件处理
+        marker.on('click', (e) => {
+          const map = mapRef.current;
+          if (map) {
+            // 先关闭可能已经打开的弹出框
+            marker.closePopup();
+            
+            // 平滑地将地图移动到标记位置
+            map.flyTo(e.latlng, map.getZoom(), {
+              duration: 0.8, // 动画持续时间（秒）
+              easeLinearity: 0.25
+            });
+
+            // 等待地图移动完成后再显示弹出框
+            setTimeout(() => {
+              marker.openPopup();
+            }, 800); // 与动画持续时间相匹配
+          }
+        });
+
         marker.on('popupopen', () => {
           // 使用 setTimeout 确保 DOM 元素已经渲染
           setTimeout(() => {

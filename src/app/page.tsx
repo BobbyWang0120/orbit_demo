@@ -19,11 +19,28 @@ interface Message {
   isLoading?: boolean;
 }
 
-const AI_RESPONSE = "Hi! I'm Orbit, your personal travel companion. I'd love to help you plan an amazing journey. Whether you need recommendations for destinations, itineraries, or local experiences, I'm here to make your travel dreams come true. Where would you like to explore?";
+const FIRST_AI_RESPONSE = `I've created a perfect Tokyo exploration plan for you! Here's a suggested itinerary:
+
+Morning: Start your day at the serene Meiji Shrine, then head to the beautiful Shinjuku Gyoen National Garden for a peaceful walk.
+
+Afternoon: Visit the iconic Tokyo Tower for breathtaking city views, followed by the historic Senso-ji Temple in Asakusa.
+
+Evening: Experience the energy of Shibuya Crossing, the world's busiest pedestrian crossing!
+
+Additional spots worth visiting:
+- Tsukiji Outer Market for amazing Japanese food
+- Ueno Park for museums and cultural sites
+- Tokyo Skytree for more stunning views
+
+I've marked all these locations on the map. Click any marker to learn more! Which spot interests you the most?`;
+
+const STANDARD_AI_RESPONSE = "Hi! I'm Orbit, your personal travel companion. I'd love to help you plan an amazing journey. Whether you need recommendations for destinations, itineraries, or local experiences, I'm here to make your travel dreams come true. Where would you like to explore?";
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
+  const [showMarkers, setShowMarkers] = useState(false);
+  const [isFirstMessage, setIsFirstMessage] = useState(true);
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
@@ -51,16 +68,25 @@ export default function Home() {
 
     // 2秒后替换加载消息为实际回答
     setTimeout(() => {
-      setMessages(prev => prev.map(msg => {
-        if (msg.id === aiLoadingMessage.id) {
-          return {
-            ...msg,
-            content: AI_RESPONSE,
-            isLoading: false
-          };
-        }
-        return msg;
-      }));
+      setMessages(prev => {
+        const updatedMessages = prev.map(msg => {
+          if (msg.id === aiLoadingMessage.id) {
+            return {
+              ...msg,
+              content: isFirstMessage ? FIRST_AI_RESPONSE : STANDARD_AI_RESPONSE,
+              isLoading: false
+            };
+          }
+          return msg;
+        });
+        return updatedMessages;
+      });
+
+      // 如果是第一条消息，显示地图标记并更新状态
+      if (isFirstMessage) {
+        setShowMarkers(true);
+        setIsFirstMessage(false);
+      }
     }, 2000);
   };
 
@@ -158,7 +184,7 @@ export default function Home() {
 
           {/* 地图区域 */}
           <div className="w-2/3 bg-white rounded-xl border border-[var(--border-color)] overflow-hidden">
-            <MapComponent />
+            <MapComponent showMarkers={showMarkers} />
           </div>
         </div>
       </div>

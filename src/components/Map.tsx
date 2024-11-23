@@ -2,15 +2,32 @@ import { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-const Map = () => {
+interface MapProps {
+  showMarkers: boolean;
+}
+
+// 预设的八个地点数据
+const LOCATIONS = [
+  { name: "Tokyo Tower", location: [35.6586, 139.7454], description: "Iconic landmark of Tokyo" },
+  { name: "Senso-ji Temple", location: [35.7147, 139.7966], description: "Ancient Buddhist temple" },
+  { name: "Shinjuku Gyoen", location: [35.6852, 139.7100], description: "Beautiful national garden" },
+  { name: "Shibuya Crossing", location: [35.6595, 139.7004], description: "World's busiest pedestrian crossing" },
+  { name: "Meiji Shrine", location: [35.6764, 139.6993], description: "Serene Shinto shrine" },
+  { name: "Ueno Park", location: [35.7147, 139.7713], description: "Large public park with museums" },
+  { name: "Tsukiji Outer Market", location: [35.6654, 139.7707], description: "Famous food market" },
+  { name: "Tokyo Skytree", location: [35.7100, 139.8107], description: "Tallest structure in Japan" }
+];
+
+const Map: React.FC<MapProps> = ({ showMarkers }) => {
   const mapRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
 
   useEffect(() => {
     if (!mapRef.current) {
       // 初始化地图
       mapRef.current = L.map('map', {
         zoomControl: false,
-      }).setView([35.6762, 139.6503], 13);
+      }).setView([35.6762, 139.6503], 12);
 
       // 使用 CartoDB 的地图样式
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -20,7 +37,7 @@ const Map = () => {
       }).addTo(mapRef.current);
 
       // 添加自定义缩放控件
-      const zoomControl = L.control.zoom({
+      L.control.zoom({
         position: 'bottomright'
       }).addTo(mapRef.current);
 
@@ -67,6 +84,11 @@ const Map = () => {
           left: 50%;
           top: 50%;
           margin: -15px 0 0 -15px;
+          transition: all 0.3s ease;
+        }
+
+        .marker-pin:hover {
+          transform: rotate(-45deg) scale(1.1);
         }
 
         .marker-pin::after {
@@ -122,6 +144,46 @@ const Map = () => {
       }
     };
   }, []);
+
+  // 处理标记点的显示和隐藏
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    // 清除现有的标记点
+    markersRef.current.forEach(marker => marker.remove());
+    markersRef.current = [];
+
+    if (showMarkers) {
+      // 创建新的标记点
+      LOCATIONS.forEach(({ name, location, description }) => {
+        const customIcon = L.divIcon({
+          className: 'custom-div-icon',
+          html: '<div class="marker-pin"></div>',
+          iconSize: [30, 42],
+          iconAnchor: [15, 42],
+          popupAnchor: [0, -42]
+        });
+
+        const popup = L.popup({
+          closeButton: false,
+          className: 'custom-popup'
+        }).setContent(`
+          <div class="font-medium">${name}</div>
+          <div class="text-sm text-text-secondary mt-1">${description}</div>
+        `);
+
+        const marker = L.marker(location as [number, number], { icon: customIcon })
+          .addTo(mapRef.current!)
+          .bindPopup(popup);
+
+        markersRef.current.push(marker);
+      });
+
+      // 调整地图视图以显示所有标记点
+      const group = L.featureGroup(markersRef.current);
+      mapRef.current.fitBounds(group.getBounds().pad(0.1));
+    }
+  }, [showMarkers]);
 
   return <div id="map" className="w-full h-full" />;
 };

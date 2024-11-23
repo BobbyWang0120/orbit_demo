@@ -113,27 +113,6 @@ const Map = () => {
         }
       `;
       document.head.appendChild(style);
-
-      // 添加一个示例标记点
-      const customIcon = L.divIcon({
-        className: 'custom-div-icon',
-        html: '<div class="marker-pin"></div>',
-        iconSize: [30, 42],
-        iconAnchor: [15, 42],
-        popupAnchor: [0, -42]
-      });
-
-      const popup = L.popup({
-        closeButton: false,
-        className: 'custom-popup'
-      }).setContent(`
-        <div class="font-medium">Tokyo Station</div>
-        <div class="text-sm text-text-secondary mt-1">Central Tokyo, Japan</div>
-      `);
-
-      L.marker([35.6762, 139.6503], { icon: customIcon })
-        .addTo(mapRef.current)
-        .bindPopup(popup);
     }
 
     return () => {
